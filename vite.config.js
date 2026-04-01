@@ -30,6 +30,10 @@ export default defineConfig({
         target: 'https://openrouter.ai',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/openrouter/, '')
+      },
+      '/api/ai': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
       }
     }
   },
