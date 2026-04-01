@@ -32,24 +32,71 @@ SmartBuild is a modern web application that helps Indian homeowners plan their d
 
 ## 🚀 Getting Started
 
-### Prerequisites
-- Node.js 18+ and npm
+### 1. Prerequisites
+- **Node.js** 18+ and **npm**
+- **Google Gemini API Key** (Get it from [Google AI Studio](https://aistudio.google.com/))
+- **OpenRouter API Key** (Optional, for fallback models)
+- **Firebase Project** (For authentication)
 
-### Installation
+### 2. Installation
 
 ```bash
 # Clone the repository
 git clone https://github.com/thanmayi0707/smartbuilding.git
 cd smartbuilding
 
-# Install dependencies
+# Install frontend & serverless dependencies
 npm install
+```
 
-# Start the development server
+### 3. Environment Variables
+Create a `.env` file in the root directory and add your credentials:
+
+```env
+# AI API Keys
+VITE_GEMINI_API_KEY="your_gemini_key"
+OPENROUTER_API_KEY="your_openrouter_key"
+
+# Firebase Config
+VITE_FIREBASE_API_KEY="..."
+VITE_FIREBASE_AUTH_DOMAIN="..."
+VITE_FIREBASE_PROJECT_ID="..."
+VITE_FIREBASE_STORAGE_BUCKET="..."
+VITE_FIREBASE_MESSAGING_SENDER_ID="..."
+VITE_FIREBASE_APP_ID="..."
+```
+
+### 4. Running Locally
+
+#### Option A: Full-Stack (Frontend + Serverless Functions)
+This mimics the Vercel production environment:
+```bash
+# Start the Vite frontend
 npm run dev
 ```
 
-The app will be running at `http://localhost:5173`
+#### Option B: Separate Backend (Express)
+If you prefer running the logic via the `backend/` folder:
+```bash
+# In one terminal, start the backend
+cd backend
+npm install
+npm run dev
+
+# In another terminal, start the frontend
+cd ..
+npm run dev
+```
+
+The app will be running at `http://localhost:5173`.
+
+## ☁️ Deployment (Vercel)
+
+The project is pre-configured for **Vercel Serverless Functions**.
+
+1.  **Install Vercel CLI**: `npm i -g vercel`
+2.  **Add Environment Variables**: Go to Vercel Dashboard Settings and add your API keys.
+3.  **Deploy**: Run `vercel --prod`
 
 ## 📁 Project Structure
 
