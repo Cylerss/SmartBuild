@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { generateAIPlan } from '../services/aiService';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import {
   HiOutlineDocumentText,
   HiOutlineCurrencyRupee,
@@ -58,6 +60,11 @@ export default function ResultsPage() {
     setLoadingSection(sectionId);
     setErrors(prev => ({ ...prev, [sectionId]: null }));
 
+    // Reset results for this section if regenerating
+    if (forceRegenerate) {
+        setAiResults(prev => ({ ...prev, [sectionId]: null }));
+    }
+
     try {
       // Call Gemini directly from frontend — no backend needed
       const result = await generateAIPlan(projectData, sectionId);
@@ -77,29 +84,7 @@ export default function ResultsPage() {
     }
   };
 
-  const formatContent = (text) => {
-    if (!text) return '';
-    let html = text
-      .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-      .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-      .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      .replace(/^\|(.+)\|$/gm, (match) => {
-        const cells = match.split('|').filter(c => c.trim());
-        if (cells.every(c => c.trim().match(/^[-:]+$/))) return '';
-        const row = cells.map(c => `<td>${c.trim()}</td>`).join('');
-        return `<tr>${row}</tr>`;
-      })
-      .replace(/^[-•] (.*$)/gm, '<li>$1</li>')
-      .replace(/^(\d+)\. (.*$)/gm, '<li>$1. $2</li>')
-      .replace(/\n\n/g, '</p><p>')
-      .replace(/\n/g, '<br/>');
-
-    html = html.replace(/((?:<li>.*<\/li><br\/?>?)+)/g, '<ul>$1</ul>');
-    html = html.replace(/((?:<tr>.*<\/tr>)+)/g, '<table>$1</table>');
-    return `<p>${html}</p>`;
-  };
+  // Markdown rendering is now handled by react-markdown and remark-gfm
 
   if (!projectData) return null;
 
@@ -155,7 +140,7 @@ export default function ResultsPage() {
         {/* Quick project info bar */}
         <div className="results-info-bar anim-fade-up anim-delay-1">
           {[
-            { icon: <HiOutlineBuildingOffice />, label: 'Plot Size', value: `${projectData.plotSize} sq ft`, color: 'green' },
+            { icon: <HiOutlineBuildingOffice />, label: 'Plot Size', value: `${projectData.plotSize} sq m`, color: 'green' },
             { icon: <HiOutlineMapPin />, label: 'Location', value: projectData.location, color: 'gold' },
             { icon: <HiOutlineCurrencyRupee />, label: 'Budget', value: `₹${projectData.budget}`, color: 'green' },
             { icon: <HiOutlineUsers />, label: 'Type', value: projectData.type, color: 'gold' },
@@ -242,10 +227,11 @@ export default function ResultsPage() {
                         </button>
                       </div>
                     ) : hasResult ? (
-                      <div
-                        className="results-content"
-                        dangerouslySetInnerHTML={{ __html: formatContent(aiResults[section.id]) }}
-                      />
+                      <div className="results-content">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {aiResults[section.id]}
+                        </ReactMarkdown>
+                      </div>
                     ) : (
                       <div className="results-empty-state">
                         <p className="results-empty-state__text">Click to generate this section</p>

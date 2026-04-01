@@ -57,7 +57,7 @@ export default function ProjectForm({ onSubmit, initialData, userId }) {
           <div>
             <label className="project-form__field-label">
               <HiOutlineBuildingOffice style={{ color: 'var(--clr-primary)' }} />
-              Plot Size (sq ft) *
+              Plot Size (sq m) *
             </label>
             <input
               type="text"
@@ -65,7 +65,7 @@ export default function ProjectForm({ onSubmit, initialData, userId }) {
               value={formData.plotSize}
               onChange={handleChange}
               className="project-form__input"
-              placeholder="e.g., 1200"
+              placeholder="e.g., 200"
               required
             />
           </div>
